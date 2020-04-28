@@ -6,19 +6,20 @@ using System.Threading.Tasks;
 
 namespace Mined_Out
 {
-    struct Teleport : ICell
+    class Teleport : Cell
     {
-        public int X { get; set; }
-        public int Y { get; set; }
+        public override char Ch { get; set; }
+        
+        public override ConsoleColor Color { get; set; }
 
-        public char Ch { get => 'O'; }
-
-        public ConsoleColor Color { get => ConsoleColor.Blue; }
-
-        public Teleport(int y, int x)
+        public Teleport(int x, int y) : base(x, y)
         {
-            X = x;
-            Y = y;
+            Ch = 'O';
+            Color = ConsoleColor.Blue;
+        }
+        public Teleport() : base()
+        {
+
         }
     }
 }

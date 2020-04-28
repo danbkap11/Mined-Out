@@ -11,6 +11,9 @@ namespace Mined_Out
         StartGame,
         Instructions,
         Results,
-        Exit
+        Exit,
+        Easy,
+        Medium,
+        Hard
     }
 }

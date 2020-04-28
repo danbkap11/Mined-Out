@@ -6,18 +6,19 @@ using System.Threading.Tasks;
 
 namespace Mined_Out
 {
-    struct WinCell : ICell
+    class WinCell : Cell
     {
-        public int X { get; set; }
-        public int Y { get; set; }
+        public override char Ch { get; set; }
 
-        public char Ch { get => ' '; }
-
-        public ConsoleColor Color { get => ConsoleColor.Green; }
-        public WinCell(int x, int y)
+        public override ConsoleColor Color { get; set; }
+        public WinCell(int x, int y) : base(x, y)
         {
-            X = x;
-            Y = y;
+            Ch = ' ';
+            Color = ConsoleColor.Green;
+        }
+        public WinCell() : base()
+        {
+
         }
     }
 }

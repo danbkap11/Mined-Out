@@ -6,18 +6,19 @@ using System.Threading.Tasks;
 
 namespace Mined_Out
 {
-    class Coin : Cell
+    class AddPts : Cell
     {
+        public static int Points { get; set; } = 0;
         public override char Ch { get; set; }
 
         public override ConsoleColor Color { get; set; }
 
-        public Coin(int x, int y) : base(x, y)
+        public AddPts(int x, int y) : base(x, y)
         {
-            Ch = '■';
-            Color = ConsoleColor.DarkBlue;
+            Ch = 'P';
+            Color = ConsoleColor.DarkGreen;
         }
-        public Coin() : base()
+        public AddPts() : base()
         {
 
         }

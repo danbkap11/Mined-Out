@@ -6,18 +6,18 @@ using System.Threading.Tasks;
 
 namespace Mined_Out
 {
-    class Coin : Cell
+    class AntiLife : Cell
     {
         public override char Ch { get; set; }
 
         public override ConsoleColor Color { get; set; }
 
-        public Coin(int x, int y) : base(x, y)
+        public AntiLife(int x, int y) : base(x, y)
         {
-            Ch = '■';
-            Color = ConsoleColor.DarkBlue;
+            Ch = 'L';
+            Color = ConsoleColor.DarkRed;
         }
-        public Coin() : base()
+        public AntiLife() : base()
         {
 
         }

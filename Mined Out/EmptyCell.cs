@@ -6,19 +6,20 @@ using System.Threading.Tasks;
 
 namespace Mined_Out
 {
-    struct EmptyCell : ICell
+    class EmptyCell : Cell
     {
-        public int X { get; set; }
-        public int Y { get; set; }
+        public override ConsoleColor Color { get; set; }
 
-        public ConsoleColor Color { get => ConsoleColor.Magenta;  }
+        public override char Ch { get; set; }
 
-        public char Ch { get => ' '; }
-
-        public EmptyCell(int x, int y)
+        public EmptyCell(int x, int y) : base(x, y)
         {
-            X = x;
-            Y = y;
+            Ch = ' ';
+            Color = ConsoleColor.Magenta;
+        }
+        public EmptyCell() : base()
+        {
+
         }
 
     }

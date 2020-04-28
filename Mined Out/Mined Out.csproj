@@ -33,6 +33,9 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Newtonsoft.Json, Version=12.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.12.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -43,7 +46,13 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AddLife.cs" />
+    <Compile Include="AddPts.cs" />
+    <Compile Include="AntiLife.cs" />
+    <Compile Include="AntiPts.cs" />
+    <Compile Include="MultiplePoint.cs" />
     <Compile Include="Teleport.cs" />
+    <Compile Include="Trap.cs" />
     <Compile Include="WinCell.cs" />
     <Compile Include="Coin.cs" />
     <Compile Include="Field.cs" />
@@ -53,13 +62,18 @@
     <Compile Include="Player.cs" />
     <Compile Include="VisitedCell.cs" />
     <Compile Include="EmptyCell.cs" />
-    <Compile Include="ICell.cs" />
+    <Compile Include="Cell.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Wall.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+    <None Include="maps\map1.json" />
+    <None Include="maps\map2.json" />
+    <None Include="maps\map3.json" />
+    <None Include="packages.config" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

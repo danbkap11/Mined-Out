@@ -6,16 +6,18 @@ using System.Threading.Tasks;
 
 namespace Mined_Out
 {
-    struct Wall : ICell
+    class Wall : Cell
     {
-        public int X { get; set; }
-        public int Y { get; set; }
-        public char Ch { get => '#'; }
-        public ConsoleColor Color { get => ConsoleColor.Gray; }
-        public Wall(int x, int y)
+        public override char Ch { get; set; }
+        public override ConsoleColor Color { get; set; }
+        public Wall(int x, int y) : base(x, y)
         {
-            X = x;
-            Y = y;
+            Ch = '#';
+            Color = ConsoleColor.Gray;
+        }
+        public Wall() : base()
+        {
+
         }
     }
 }
