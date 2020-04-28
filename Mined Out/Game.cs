@@ -519,7 +519,7 @@ namespace Mined_Out
                                                         Console.Clear();
                                                         var settings = new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.Auto, Formatting = Formatting.Indented };
                                                         string projectDirectory = Directory.GetParent(System.Environment.CurrentDirectory)?.Parent?.FullName;
-                                                        using (StreamReader file = File.OpenText($@"{projectDirectory}\maps\map2.json"))
+                                                        using (StreamReader file = File.OpenText($@"{projectDirectory}\maps\map3.json"))
                                                         {
                                                             Newtonsoft.Json.JsonSerializer serializer = Newtonsoft.Json.JsonSerializer.Create(settings);
                                                             map3 = (Field)serializer.Deserialize(file, typeof(Field));
