@@ -7,19 +7,18 @@ using System.Threading.Tasks;
 namespace Mined_Out
 {
     class AntiLife : Cell
-    {
-        public override char Ch { get; set; }
-
-        public override ConsoleColor Color { get; set; }
-
+    { 
         public AntiLife(int x, int y) : base(x, y)
         {
             Ch = 'L';
             Color = ConsoleColor.DarkRed;
         }
-        public AntiLife() : base()
-        {
 
+        public static void OnAntiLife(Player pl)
+        {
+            pl.Lives--;
+            Console.SetCursorPosition(33, 10);
+            Console.Write($"Lives: {pl.Lives}");
         }
     }
 }

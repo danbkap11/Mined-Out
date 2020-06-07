@@ -10,9 +10,9 @@ namespace Mined_Out
     {
         public int X { get; set; }
         public int Y { get; set; }
-        public abstract char Ch { get; set; }
+        public char Ch { get; set; }
 
-        public abstract ConsoleColor Color { get; set; }
+        public ConsoleColor Color { get; set; }
         public Cell(int x, int y)
         {
             X = x;

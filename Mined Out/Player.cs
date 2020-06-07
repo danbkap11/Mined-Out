@@ -9,49 +9,43 @@ namespace Mined_Out
     class Player : Cell
     {
         public int Lives { get; set; }
-        public override char Ch { get; set; }
-
-        public override ConsoleColor Color { get; set; }
-
         public Player(int x, int y, int lives) : base(x, y)
         {
             Lives = lives;
             Ch = '■';
             Color = ConsoleColor.Green;
         }
-        public Player() : base()
+        public Player() : this(0, 0, 1)
         {
-            Ch = '■';
-            Color = ConsoleColor.Green;
+            
         }
 
-
-        public void Move(int dx, int dy, Field a)
+        public void Move(int dx, int dy, Field map)
         {
             var o = new object();
             X += dx;
             Y += dy;
             Console.ForegroundColor = ConsoleColor.Green;
             lock (o)
-            {
+            { 
                 Console.SetCursorPosition(X, Y);
-            Console.Write('■');
-            if (!(a.field[Y - dy, X - dx] is Teleport) && !(a.field[Y - dy, X - dx] is Wall))
-            {
-                a.field[Y - dy, X - dx] = new VisitedCell(X - dx, Y - dy);
-            }
+                Console.Write('■');
+                if (!(map.field[Y - dy, X - dx] is Teleport) && !(map.field[Y - dy, X - dx] is Wall))
+                {
+                    map.field[Y - dy, X - dx] = new VisitedCell(X - dx, Y - dy);
+                }
 
-            Console.SetCursorPosition(X - dx, Y - dy);
-            Console.ForegroundColor = a.field[Y - dy, X - dx].Color;
-            Console.Write(a.field[Y - dy, X - dx].Ch);
-            Console.Beep(10000, 5);
-            Console.SetCursorPosition(49, 2);
-            Console.ForegroundColor = ConsoleColor.White;
-            Console.Write(AdjacentMines(a));
-            Game.Moves++;
+                Console.SetCursorPosition(X - dx, Y - dy);
+                Console.ForegroundColor = map.field[Y - dy, X - dx].Color;
+                Console.Write(map.field[Y - dy, X - dx].Ch);
+                Console.Beep(10000, 5);
+                Console.SetCursorPosition(49, 2);
+                Console.ForegroundColor = ConsoleColor.White;
+                Console.Write(AdjacentMines(map));
+                Game.Moves++;
                 Console.SetCursorPosition(40, 4);
                 Console.Write(Game.Moves);
-                if (a.field[Y, X] is Coin)
+                if (map.field[Y, X] is Coin)
                 {
                     Game.Coins++;
                     Console.SetCursorPosition(40, 8);
@@ -59,22 +53,22 @@ namespace Mined_Out
                 }
             }
         }
-        public int AdjacentMines(Field a)
+        public int AdjacentMines(Field map)
         {
             int counter = 0;
-            if (a.field[Y + 1, X] is Mine || a.field[Y + 1, X] is Wall)
+            if (map.field[Y + 1, X] is Mine || map.field[Y + 1, X] is Wall)
             {
                 counter++;
             }
-            if (a.field[Y - 1, X] is Mine || a.field[Y - 1, X] is Wall)
+            if (map.field[Y - 1, X] is Mine || map.field[Y - 1, X] is Wall)
             {
                 counter++;
             }
-            if (a.field[Y, X + 1] is Mine || a.field[Y, X + 1] is Wall)
+            if (map.field[Y, X + 1] is Mine || map.field[Y, X + 1] is Wall)
             {
                 counter++;
             } 
-            if (a.field[Y, X - 1] is Mine || a.field[Y, X - 1] is Wall)
+            if (map.field[Y, X - 1] is Mine || map.field[Y, X - 1] is Wall)
             {
                 counter++;
             }

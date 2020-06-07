@@ -35,14 +35,14 @@ namespace Mined_Out
         {
             int x = 80;
             int y = 26;
-
             Console.SetWindowSize(x + 1, y + 1);
             Console.SetBufferSize(x + 1, y + 1);
             Console.CursorVisible = false;
-
-            for (int i = 0; i < 22; i++)
+            int width = 32;
+            int height = 22;
+            for (int i = 0; i < height; i++)
             {
-                for (int j = 0; j < 32; j++)
+                for (int j = 0; j < width; j++)
                 {
                     if (!(field[i, j] is EmptyCell) && !(field[i, j] is Wall) && !(field[i, j] is Mine) && !(field[i, j] is WinCell) && !(field[i, j] is Player))
                     {

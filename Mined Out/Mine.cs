@@ -7,18 +7,18 @@ using System.Threading.Tasks;
 namespace Mined_Out
 {
     class Mine : Cell
-    {
-       public override char Ch { get; set; }
-       public override ConsoleColor Color { get; set; }
-
-       public Mine(int x, int y) : base(x, y)
-       {
+    { 
+        public Mine(int x, int y) : base(x, y)
+        {
            Ch = 'm';
            Color = ConsoleColor.Magenta;
         }
-       public Mine() : base()
-       {
 
-       }
+        public static void OnMine(Player pl)
+        {
+            pl.Lives--;
+            Console.SetCursorPosition(33, 10);
+            Console.Write($"Lives: {pl.Lives}");
+        }
     }
 }

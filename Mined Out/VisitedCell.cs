@@ -7,18 +7,12 @@ using System.Threading.Tasks;
 namespace Mined_Out
 {
     class VisitedCell : Cell
-    {
-        public override char Ch { get; set; }
-
-        public override ConsoleColor Color { get; set; }
+    { 
         public VisitedCell(int x, int y) : base(x, y)
         {
             Ch = '.';
             Color = ConsoleColor.White;
         }
-        public VisitedCell() : base()
-        {
-
-        }
+       
     }
 }

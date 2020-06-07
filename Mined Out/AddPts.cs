@@ -9,18 +9,14 @@ namespace Mined_Out
     class AddPts : Cell
     {
         public static int Points { get; set; } = 0;
-        public override char Ch { get; set; }
-
-        public override ConsoleColor Color { get; set; }
-
         public AddPts(int x, int y) : base(x, y)
         {
             Ch = 'P';
             Color = ConsoleColor.DarkGreen;
         }
-        public AddPts() : base()
+        public static void SetPts(int points)
         {
-
+            Points = points;
         }
     }
 }

@@ -7,17 +7,17 @@ using System.Threading.Tasks;
 namespace Mined_Out
 {
     class Wall : Cell
-    {
-        public override char Ch { get; set; }
-        public override ConsoleColor Color { get; set; }
+    { 
         public Wall(int x, int y) : base(x, y)
         {
             Ch = '#';
             Color = ConsoleColor.Gray;
         }
-        public Wall() : base()
+        public static void OnWall(Player pl)
         {
-
+            pl.Lives--;
+            Console.SetCursorPosition(33, 10);
+            Console.Write($"Lives: {pl.Lives}");
         }
     }
 }

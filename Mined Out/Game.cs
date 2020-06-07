@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Security.Cryptography.X509Certificates;
 using System.Timers;
 using Newtonsoft.Json;
 
@@ -21,10 +22,7 @@ namespace Mined_Out
 
         public static int Victories = 0;
 
-        public static List<double> Scores = new List<double>()
-        {
-
-        };
+        public static List<double> Scores = new List<double>();
 
         public static object o = new object();
 
@@ -40,77 +38,80 @@ namespace Mined_Out
             }
         }
 
-        private static void GameWon()
+        private static void annulate()
         {
+            Seconds = 0;
+            Coins = 0;
+            Moves = 0;
+            AntiPts.AntiPoints = 0;
+            AddPts.Points = 0;
+            MultiplePoint.Multiplicator = 1;
             aTimer.Dispose();
             aTimer = new System.Timers.Timer();
             Console.Clear();
+        }
+
+        private static void returnToMenu()
+        {
+            while (true)
+            {
+                ConsoleKeyInfo key = Console.ReadKey(true);
+                if (key.Key == ConsoleKey.M) Menu();
+            }
+        }
+        public static void GameWon()
+        {
+            annulate();
             Console.WriteLine("Congratulations!!!");
             Console.WriteLine($"You won with score {ScoreSummary()}");
             Scores.Add(ScoreSummary());
-            Seconds = 0;
-            Coins = 0;
-            Moves = 0;
-            AntiPts.AntiPoints = 0;
-            AddPts.Points = 0;
-            MultiplePoint.Multiplicator = 1;
             Victories++;
             Console.WriteLine("Press M to return to the main menu");
             Result = Score();
-            while (true)
-            {
-                ConsoleKeyInfo key = Console.ReadKey(true);
-                if (key.Key == ConsoleKey.M) Menu();
-            }
+            returnToMenu();
 
         }
 
-        private static void GameLost(Player player)
+        public static void GameLost(Player player)
         {
             if(player.Lives == 0 || EscFlag)
-            { 
-            Seconds = 0;
-            Coins = 0;
-            Moves = 0;
-            EscFlag = false;
-            AntiPts.AntiPoints = 0;
-            AddPts.Points = 0;
-            MultiplePoint.Multiplicator = 1;
-            aTimer.Dispose();
-            aTimer = new System.Timers.Timer();
-            Console.Clear();
-            Console.BackgroundColor = ConsoleColor.Black;
-            Console.WriteLine("Oops...");
-            Console.WriteLine("I regret to say that unfortunately you've lost.");
-            Console.SetCursorPosition(0, 7);
-            Console.WriteLine("Press M to return to the main menu");
-            while (true)
             {
-                ConsoleKeyInfo key = Console.ReadKey(true);
-                if (key.Key == ConsoleKey.M) Menu();
-            }
+                EscFlag = false;
+                annulate();
+                Console.BackgroundColor = ConsoleColor.Black;
+                Console.WriteLine("Oops...");
+                Console.WriteLine("I regret to say that unfortunately you've lost.");
+                Console.SetCursorPosition(0, 7);
+                Console.WriteLine("Press M to return to the main menu");
+                returnToMenu();
             }
         }
 
         private static int ScoreSummary()
         {
-            double x = (Score() + AddPts.Points + AntiPts.AntiPoints) * MultiplePoint.Multiplicator;
-            if (x > 0) return (int) Math.Floor(x);
+            double score = (Score() + AddPts.Points + AntiPts.AntiPoints) * MultiplePoint.Multiplicator;
+            if (score > 0) return (int) Math.Floor(score);
             else return 0;
         }
 
         private static int Score()
         {
-            if (1000 - 5 * Moves - 3 * Seconds + 100 * Coins < 0) return 0;
-            return 1000 - 5 * Moves - 3 * Seconds + 100 * Coins;
+            int score = 1000 - 5 * Moves - 3 * Seconds + 100 * Coins;
+            if (score < 0) return 0;
+            return score;
         }
 
         static System.Timers.Timer aTimer = new System.Timers.Timer();
 
-
-        public static void PlayerControl(Field a)
+        public static void Sound()
         {
-            Random rnd = new Random();
+            Console.Beep(400, 100);
+            Console.Beep(400, 100);
+            Console.Beep(400, 100);
+            Console.Beep(400, 100);
+        }
+        public static void PlayerControl(Field map)
+        {
             aTimer.Elapsed += new ElapsedEventHandler(SecondsCounter);
             aTimer.Interval = 1000;
             aTimer.Enabled = true;
@@ -126,149 +127,79 @@ namespace Mined_Out
 
                 if (key.Key == ConsoleKey.UpArrow || key.Key == ConsoleKey.W)
                 {
-                    player.Move(0, -1, a);
+                    player.Move(0, -1, map);
                 }
                 else if (key.Key == ConsoleKey.DownArrow || key.Key == ConsoleKey.S)
                 {
-                    player.Move(0, 1, a);
+                    player.Move(0, 1, map);
                 }
                 else if (key.Key == ConsoleKey.RightArrow || key.Key == ConsoleKey.D)
                 {
-                    player.Move(1, 0, a);
+                    player.Move(1, 0, map);
                 }
                 else if (key.Key == ConsoleKey.LeftArrow || key.Key == ConsoleKey.A)
                 {
-                    player.Move(-1, 0, a);
+                    player.Move(-1, 0, map);
                 }
 
-                if (a.field[player.Y, player.X] is Mine || a.field[player.Y, player.X] is Wall)
+                if (map.field[player.Y, player.X] is Mine) 
                 {
-                    Console.Beep(400, 100);
-                    Console.Beep(400, 100);
-                    Console.Beep(400, 100);
-                    Console.Beep(400, 100);
-                    player.Lives--;
-                    Console.SetCursorPosition(33, 10);
-                    Console.Write($"Lives: {player.Lives}");
+                    Sound();
+                    Mine.OnMine(player);
                     GameLost(player);
                 }
 
-                if (a.field[player.Y, player.X] is WinCell)
+                if (map.field[player.Y, player.X] is Wall)
                 {
-                    Console.Beep(400, 100);
-                    Console.Beep(400, 100);
-                    Console.Beep(400, 100);
-                    Console.Beep(400, 100);
+                    Sound();
+                    Wall.OnWall(player);
+                    GameLost(player);
+                }
+
+                if (map.field[player.Y, player.X] is WinCell)
+                {
+                    Sound();
                     GameWon();
-                    break;
                 }
 
-                if (a.field[player.Y, player.X] is AddLife)
+                if (map.field[player.Y, player.X] is AddLife)
                 {
-                    player.Lives++;
-                    Console.SetCursorPosition(33, 10);
-                    Console.Write($"Lives: {player.Lives}");
+                    AddLife.OnAddLife(player);
                 }
 
-                if (a.field[player.Y, player.X] is AntiLife)
+                if (map.field[player.Y, player.X] is AntiLife)
                 {
-                    player.Lives--;
-                    Console.SetCursorPosition(33, 10);
-                    Console.Write($"Lives: {player.Lives}");
+                    AntiLife.OnAntiLife(player);
                     GameLost(player);
                 }
 
-                if (a.field[player.Y, player.X] is MultiplePoint)
+                if (map.field[player.Y, player.X] is MultiplePoint)
                 {
-                    MultiplePoint.Multiplicator = 1.25;
+                    MultiplePoint.SetMultiplicator(1.25);
                 }
 
-                if (a.field[player.Y, player.X] is AddPts)
+                if (map.field[player.Y, player.X] is AddPts)
                 {
-                    AddPts.Points = 150;
+                    AddPts.SetPts(150);
                 }
 
-                if (a.field[player.Y, player.X] is AntiPts)
+                if (map.field[player.Y, player.X] is AntiPts)
                 {
-                    AntiPts.AntiPoints = -250;
+                    AntiPts.SetAntiPts(-250);
                 }
 
-                if (a.field[player.Y, player.X] is Trap)
+                if (map.field[player.Y, player.X] is Trap)
                 {
-                    int counter = 0;
-                    while (counter < 4)
-                    {
-                        ConsoleKeyInfo keyTrap = Console.ReadKey(true);
-                        if (keyTrap.Key == ConsoleKey.W || keyTrap.Key == ConsoleKey.UpArrow
-                                                        || keyTrap.Key == ConsoleKey.A ||
-                                                        keyTrap.Key == ConsoleKey.LeftArrow
-                                                        || keyTrap.Key == ConsoleKey.S ||
-                                                        keyTrap.Key == ConsoleKey.DownArrow
-                                                        || keyTrap.Key == ConsoleKey.D ||
-                                                        keyTrap.Key == ConsoleKey.RightArrow)
-                        {
-                            counter++;
-                            Game.Moves++;
-                            Console.SetCursorPosition(40, 4);
-                            Console.Write(Game.Moves);
-                        }
-
-                        if (keyTrap.Key == ConsoleKey.Escape)
-                        {
-                            EscFlag = true;
-                            GameLost(player);
-                        }
-                    }
+                    Trap.OnTrap(player);
                 }
 
-                if (a.field[player.Y, player.X] is Teleport)
-                    {
-                        int x = rnd.Next(1, 10);
-                        if (x < 7)
-                        {
-                            if (x % 2 == 1)
-                            {
-                                var help = Find(a.field, player.Y, player.X);
-                                player.Move(help.Item2 - player.X, help.Item1 - player.Y, a);
-
-                            }
-                            else
-                            {
-                                while (true)
-                                {
-                                    int x2 = rnd.Next(1, 30);
-                                    int y2 = rnd.Next(1, 19);
-                                    if (a.field[y2, x2] is EmptyCell || a.field[y2, x2] is VisitedCell)
-                                    {
-                                        player.Move(x2 - player.X, y2 - player.Y, a);
-                                        break;
-                                    }
-                                }
-
-                            }
-                        }
-                    }
+                if (map.field[player.Y, player.X] is Teleport)
+                {
+                    Teleport.OnTeleport(player, map);
                 }
             }
+        }
 
-            public static Tuple<int, int> Find(Cell[,] a, int Y, int X)
-            { 
-                Tuple<int, int> res = new Tuple<int, int>(0, 0);
-                for (int i = 0; i < a.GetLength(0); i++)
-                {
-                        for (int j = 0; j < a.GetLength(1); j++)
-                        {
-                            if (a[i, j].GetType().Equals(new Teleport().GetType()) && (i != Y || j != X))
-                            {
-                                Tuple<int, int> res2 = new Tuple<int, int>(i ,j);
-                                res = res2;
-                            }
-                            else continue;
-                        }
-                }
-
-                return res;
-            }
             public static void Instruct()
             {
                 Console.WriteLine("This is 'Mined Out' game.");
@@ -289,9 +220,29 @@ namespace Mined_Out
                 Console.WriteLine("Press 'M' to return to the main menu.");
             }
 
-
-
-            public static void Menu()
+            public static void MenuDrawing(int X, int Y, int newY, string oldPointer, string newPointer)
+            {
+                Console.SetCursorPosition(X, Y);
+                Console.ForegroundColor = ConsoleColor.White;
+                Console.Write(oldPointer + "   ");
+                Console.SetCursorPosition(X, newY);
+                Console.Write(">>" + newPointer + "   ");
+            }
+            public static void LoadField(string mapName)
+            {
+                Field field = new Field();
+                Console.Clear();
+                var settings = new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.Auto, Formatting = Formatting.Indented };
+                string projectDirectory = Directory.GetParent(System.Environment.CurrentDirectory)?.Parent?.FullName;
+                using (StreamReader file = File.OpenText($@"{projectDirectory}\maps\{mapName}.json"))
+                {
+                    Newtonsoft.Json.JsonSerializer serializer = Newtonsoft.Json.JsonSerializer.Create(settings);
+                    field = (Field)serializer.Deserialize(file, typeof(Field));
+                }
+                field.PrintField();
+                PlayerControl(field);
+            }
+        public static void Menu()
             {
                 Console.Clear();
                 Console.CursorVisible = false;
@@ -320,35 +271,19 @@ namespace Mined_Out
                             {
                                 case MenuOption.StartGame:
                                     options = MenuOption.Instructions;
-                                    Console.SetCursorPosition(3, 3);
-                                    Console.ForegroundColor = ConsoleColor.White;
-                                    Console.Write("Start new game    ");
-                                    Console.SetCursorPosition(3, 5);
-                                    Console.Write(">>Instructions");
+                                    MenuDrawing(3,3,5,"Start new game", "Instructions");
                                     break;
                                 case MenuOption.Instructions:
                                     options = MenuOption.Results;
-                                    Console.SetCursorPosition(3, 5);
-                                    Console.ForegroundColor = ConsoleColor.White;
-                                    Console.Write("Instructions    ");
-                                    Console.SetCursorPosition(3, 7);
-                                    Console.Write(">>Your results");
+                                    MenuDrawing(3, 5, 7, "Instructions", "Your results");
                                     break;
                                 case MenuOption.Results:
                                     options = MenuOption.Exit;
-                                    Console.SetCursorPosition(3, 7);
-                                    Console.ForegroundColor = ConsoleColor.White;
-                                    Console.Write("Your results    ");
-                                    Console.SetCursorPosition(3, 9);
-                                    Console.Write(">>Exit");
+                                    MenuDrawing(3, 7, 9, "Your results", "Exit");
                                     break;
                                 case MenuOption.Exit:
                                     options = MenuOption.StartGame;
-                                    Console.SetCursorPosition(3, 9);
-                                    Console.ForegroundColor = ConsoleColor.White;
-                                    Console.Write("Exit    ");
-                                    Console.SetCursorPosition(3, 3);
-                                    Console.Write(">>Start new game");
+                                    MenuDrawing(3, 9, 3, "Exit", "Start new game");
                                     break;
                             }
 
@@ -361,35 +296,19 @@ namespace Mined_Out
 
                                 case MenuOption.StartGame:
                                     options = MenuOption.Exit;
-                                    Console.SetCursorPosition(3, 3);
-                                    Console.ForegroundColor = ConsoleColor.White;
-                                    Console.Write("Start new game     ");
-                                    Console.SetCursorPosition(3, 9);
-                                    Console.Write(">>Exit");
+                                    MenuDrawing(3, 3, 9, "Start new game", "Exit");
                                     break;
                                 case MenuOption.Instructions:
                                     options = MenuOption.StartGame;
-                                    Console.SetCursorPosition(3, 5);
-                                    Console.ForegroundColor = ConsoleColor.White;
-                                    Console.Write("Instructions     ");
-                                    Console.SetCursorPosition(3, 3);
-                                    Console.Write(">>Start new game");
+                                    MenuDrawing(3, 5, 3, "Instructions", "Start new game");
                                     break;
                                 case MenuOption.Results:
                                     options = MenuOption.Instructions;
-                                    Console.SetCursorPosition(3, 7);
-                                    Console.ForegroundColor = ConsoleColor.White;
-                                    Console.Write("Your results     ");
-                                    Console.SetCursorPosition(3, 5);
-                                    Console.Write(">>Instructions");
+                                    MenuDrawing(3, 7, 5, "Your results", "Instructions");
                                     break;
                                 case MenuOption.Exit:
                                     options = MenuOption.Results;
-                                    Console.SetCursorPosition(3, 9);
-                                    Console.ForegroundColor = ConsoleColor.White;
-                                    Console.Write("Exit     ");
-                                    Console.SetCursorPosition(3, 7);
-                                    Console.Write(">>Your results");
+                                    MenuDrawing(3, 9, 7, "Exit", "Your results");
                                     break;
                             }
 
@@ -419,27 +338,15 @@ namespace Mined_Out
                                                 {
                                                     case MenuOption.Easy:
                                                         options2 = MenuOption.Medium;
-                                                        Console.SetCursorPosition(3, 5);
-                                                        Console.ForegroundColor = ConsoleColor.White;
-                                                        Console.Write("Easy   ");
-                                                        Console.SetCursorPosition(3, 7);
-                                                        Console.Write(">>Medium   ");
+                                                        MenuDrawing(3, 5, 7, "Easy", "Medium");
                                                         break;
                                                     case MenuOption.Medium:
                                                         options2 = MenuOption.Hard;
-                                                        Console.SetCursorPosition(3, 7);
-                                                        Console.ForegroundColor = ConsoleColor.White;
-                                                        Console.Write("Medium   ");
-                                                        Console.SetCursorPosition(3, 9);
-                                                        Console.Write(">>Hard   ");
+                                                        MenuDrawing(3, 7, 9, "Medium", "Hard");
                                                         break;
                                                     case MenuOption.Hard:
                                                         options2 = MenuOption.Easy;
-                                                        Console.SetCursorPosition(3, 9);
-                                                        Console.ForegroundColor = ConsoleColor.White;
-                                                        Console.Write("Hard   ");
-                                                        Console.SetCursorPosition(3, 5);
-                                                        Console.Write(">>Easy   ");
+                                                        MenuDrawing(3, 9, 5, "Hard", "Easy");
                                                         break;
                                                 }
 
@@ -452,27 +359,15 @@ namespace Mined_Out
 
                                                     case MenuOption.Easy:
                                                         options2 = MenuOption.Hard;
-                                                        Console.SetCursorPosition(3, 5);
-                                                        Console.ForegroundColor = ConsoleColor.White;
-                                                        Console.Write("Easy   ");
-                                                        Console.SetCursorPosition(3, 9);
-                                                        Console.Write(">>Hard   ");
+                                                        MenuDrawing(3, 5, 9, "Easy", "Hard");
                                                         break;
                                                     case MenuOption.Medium:
                                                         options2 = MenuOption.Easy;
-                                                        Console.SetCursorPosition(3, 7);
-                                                        Console.ForegroundColor = ConsoleColor.White;
-                                                        Console.Write("Medium   ");
-                                                        Console.SetCursorPosition(3, 5);
-                                                        Console.Write(">>Easy   ");
+                                                        MenuDrawing(3, 7, 5, "Medium", "Easy");
                                                         break;
                                                     case MenuOption.Hard:
                                                         options2 = MenuOption.Medium;
-                                                        Console.SetCursorPosition(3, 9);
-                                                        Console.ForegroundColor = ConsoleColor.White;
-                                                        Console.Write("Hard   ");
-                                                        Console.SetCursorPosition(3, 7);
-                                                        Console.Write(">>Medium   ");
+                                                        MenuDrawing(3, 9, 7, "Hard", "Medium");
                                                         break;
                                                 }
 
@@ -483,51 +378,21 @@ namespace Mined_Out
                                                 {
                                                     case MenuOption.Easy:
                                                     {
-                                                        Field field = new Field();
-                                                        Console.Clear();
-                                                        var settings = new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.Auto, Formatting = Formatting.Indented };
-                                                        string projectDirectory = Directory.GetParent(System.Environment.CurrentDirectory)?.Parent?.FullName;
-                                                        using (StreamReader file = File.OpenText($@"{projectDirectory}\maps\map1.json"))
-                                                        {
-                                                            Newtonsoft.Json.JsonSerializer serializer = Newtonsoft.Json.JsonSerializer.Create(settings);
-                                                            field = (Field)serializer.Deserialize(file, typeof(Field));
-                                                        }
-                                                        field.PrintField();
-                                                        PlayerControl(field);
+                                                        LoadField("map1");
                                                         break;
 
                                                     }
                                                     case MenuOption.Medium:
                                                     {
-                                                        Field map2 = new Field();
-                                                        Console.Clear();
-                                                        var settings = new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.Auto, Formatting = Formatting.Indented };
-                                                        string projectDirectory = Directory.GetParent(System.Environment.CurrentDirectory)?.Parent?.FullName;
-                                                        using (StreamReader file = File.OpenText($@"{projectDirectory}\maps\map2.json"))
-                                                        {
-                                                            Newtonsoft.Json.JsonSerializer serializer = Newtonsoft.Json.JsonSerializer.Create(settings);
-                                                            map2 = (Field)serializer.Deserialize(file, typeof(Field));
-                                                        }
-                                                        map2.PrintField();
-                                                        PlayerControl(map2);
+                                                        LoadField("map2");
                                                         break;
 
-                                                        }
+                                                    }
                                                     case MenuOption.Hard:
                                                     {
-                                                        Field map3 = new Field();
-                                                        Console.Clear();
-                                                        var settings = new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.Auto, Formatting = Formatting.Indented };
-                                                        string projectDirectory = Directory.GetParent(System.Environment.CurrentDirectory)?.Parent?.FullName;
-                                                        using (StreamReader file = File.OpenText($@"{projectDirectory}\maps\map3.json"))
-                                                        {
-                                                            Newtonsoft.Json.JsonSerializer serializer = Newtonsoft.Json.JsonSerializer.Create(settings);
-                                                            map3 = (Field)serializer.Deserialize(file, typeof(Field));
-                                                        }
-                                                        map3.PrintField();
-                                                        PlayerControl(map3);
+                                                        LoadField("map3");
                                                         break;
-                                                        }
+                                                    }
                                                 }
 
                                                 break;
